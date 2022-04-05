@@ -1,10 +1,12 @@
-﻿using PerekrestokParser.ApplicationLayer;
+﻿using LoadingIndicator.WinForms;
+using PerekrestokParser.ApplicationLayer;
 using PerekrestokParser.Common;
 using PerekrestokParser.Forms;
 using PerekrestokParser.ParserSettings;
 
 namespace PerekrestokParser
 {
+
     partial class MainPage
     {
         /// <summary>
@@ -45,6 +47,7 @@ namespace PerekrestokParser
             this.DownloadOnePage.TabIndex = 0;
             this.DownloadOnePage.Text = "Загрузить цены с определенной страницы каталога";
             this.DownloadOnePage.UseVisualStyleBackColor = true;
+            this.DownloadOnePage.Click += DownloadOnePage_Click;
             // 
             // DownloadAllCatalogue
             // 
@@ -54,6 +57,7 @@ namespace PerekrestokParser
             this.DownloadAllCatalogue.TabIndex = 1;
             this.DownloadAllCatalogue.Text = "Загрузить цены со всего каталога";
             this.DownloadAllCatalogue.UseVisualStyleBackColor = true;
+            this.DownloadAllCatalogue.Click += DownloadAllCatalogue_Click;
             // 
             // MainPage
             // 
@@ -67,8 +71,8 @@ namespace PerekrestokParser
             this.Name = "MainPage";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Parser v0.1";
+            this.Load += new System.EventHandler(this.MainPage_Load);
             this.ResumeLayout(false);
-
         }
 
         private async void DownloadOnePage_Click(object sender, EventArgs e)
@@ -77,23 +81,26 @@ namespace PerekrestokParser
         }
         private async Task DownloadOnePageRun()
         {
-            LinkRequestPage linkRequestPage = new LinkRequestPage();
-
-            if (linkRequestPage.ShowDialog() == DialogResult.OK)
+            using (_longOperation.Start())
             {
-                Parser parser = new Parser(new PerekrestokSettings($"{linkRequestPage.Link}"));
-                try
+                LinkRequestPage linkRequestPage = new LinkRequestPage();
+
+                if (linkRequestPage.ShowDialog() == DialogResult.OK)
                 {
-                    await parser.CheckSiteAvailability();
-                    await parser.HandlePage();
-                }
-                catch (ParserException ex)
-                {
-                    MessageBox.Show($"{ex.Error}");
-                }
-                finally
-                {
-                    MessageBox.Show("Работа парсера завершена");
+                    Parser parser = new Parser(new PerekrestokSettings($"{linkRequestPage.Link}"));
+                    try
+                    {
+                        await parser.CheckSiteAvailability();
+                        await parser.HandlePage();
+                    }
+                    catch (ParserException ex)
+                    {
+                        MessageBox.Show($"{ex.Error}");
+                    }
+                    finally
+                    {
+                        MessageBox.Show("Работа парсера завершена");
+                    }
                 }
             }
         }
@@ -104,19 +111,22 @@ namespace PerekrestokParser
         }
         private async Task DownloadAllCatalogueRun()
         {
-            Parser parser = new Parser(new PerekrestokSettings("https://www.perekrestok.ru/cat"));
-            try
+            using (_longOperation.Start())
             {
-                await parser.CheckSiteAvailability();
-                await parser.HandleAllCatalogue();
-            }
-            catch (ParserException ex)
-            {
-                MessageBox.Show($"{ex.Error}");
-            }
-            finally
-            {
-                MessageBox.Show("Работа парсера завершена");
+                Parser parser = new Parser(new PerekrestokSettings("https://www.perekrestok.ru/cat"));
+                try
+                {
+                    await parser.CheckSiteAvailability();
+                    await parser.HandleAllCatalogue();
+                }
+                catch (ParserException ex)
+                {
+                    MessageBox.Show($"{ex.Error}");
+                }
+                finally
+                {
+                    MessageBox.Show("Работа парсера завершена");
+                }
             }
         }
 

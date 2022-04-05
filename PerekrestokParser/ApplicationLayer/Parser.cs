@@ -44,7 +44,7 @@ namespace PerekrestokParser.ApplicationLayer
 
             foreach (var item in allBlocksWithPrice)
             {
-                await GetProductContent(item);
+                GetProductContent(item);
             }
 
             _fileHelper.SaveDataToFile(_products.ToArray(), category,  division);
@@ -105,6 +105,7 @@ namespace PerekrestokParser.ApplicationLayer
             var productPricing = divWithProductPricing.FirstOrDefault().TextContent;
 
             _products.Add(new Product(productName, oldPrice, actualPrice, productRating, productNumOfVotes, productPricing));
+
             return Task.CompletedTask;
         }
 
