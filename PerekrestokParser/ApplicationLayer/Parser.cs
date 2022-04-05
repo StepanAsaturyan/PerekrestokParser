@@ -44,7 +44,7 @@ namespace PerekrestokParser.ApplicationLayer
 
             foreach (var item in allBlocksWithPrice)
             {
-                GetProductContent(item);
+                await GetProductContent(item);
             }
 
             _fileHelper.SaveDataToFile(_products.ToArray(), category,  division);

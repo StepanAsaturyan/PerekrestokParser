@@ -81,13 +81,14 @@ namespace PerekrestokParser
         }
         private async Task DownloadOnePageRun()
         {
-            using (_longOperation.Start())
-            {
-                LinkRequestPage linkRequestPage = new LinkRequestPage();
+            LinkRequestPage linkRequestPage = new LinkRequestPage();
 
-                if (linkRequestPage.ShowDialog() == DialogResult.OK)
+            if (linkRequestPage.ShowDialog() == DialogResult.OK)
+            {
+                Parser parser = new Parser(new PerekrestokSettings($"{linkRequestPage.Link}"));
+
+                using (_longOperation.Start())
                 {
-                    Parser parser = new Parser(new PerekrestokSettings($"{linkRequestPage.Link}"));
                     try
                     {
                         await parser.CheckSiteAvailability();
@@ -111,9 +112,10 @@ namespace PerekrestokParser
         }
         private async Task DownloadAllCatalogueRun()
         {
+            Parser parser = new Parser(new PerekrestokSettings("https://www.perekrestok.ru/cat"));
+
             using (_longOperation.Start())
             {
-                Parser parser = new Parser(new PerekrestokSettings("https://www.perekrestok.ru/cat"));
                 try
                 {
                     await parser.CheckSiteAvailability();
